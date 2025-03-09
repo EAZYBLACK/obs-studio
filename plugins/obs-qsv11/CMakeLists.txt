@@ -22,7 +22,11 @@ target_sources(
     $<$<PLATFORM_ID:Linux>:common_utils_linux.cpp>
     $<$<PLATFORM_ID:Windows>:common_directx11.cpp>
     $<$<PLATFORM_ID:Windows>:common_directx11.h>
+    $<$<PLATFORM_ID:Windows>:common_directx9.cpp>
+    $<$<PLATFORM_ID:Windows>:common_directx9.h>
     $<$<PLATFORM_ID:Windows>:common_utils_windows.cpp>
+    $<$<PLATFORM_ID:Windows>:device_directx9.cpp>
+    $<$<PLATFORM_ID:Windows>:device_directx9.h>
     common_utils.cpp
     common_utils.h
     obs-qsv11-plugin-main.c
@@ -49,7 +53,9 @@ target_link_libraries(
     VPL::VPL
     $<$<PLATFORM_ID:Linux>:Libva::va>
     $<$<PLATFORM_ID:Linux>:Libva::drm>
+    $<$<PLATFORM_ID:Windows>:d3d9>
     $<$<PLATFORM_ID:Windows>:d3d11>
+    $<$<PLATFORM_ID:Windows>:dxva2>
     $<$<PLATFORM_ID:Windows>:dxgi>
     $<$<PLATFORM_ID:Windows>:dxguid>
 )
