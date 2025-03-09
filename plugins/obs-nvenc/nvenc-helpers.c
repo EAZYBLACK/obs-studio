@@ -293,7 +293,6 @@ static bool nvenc_check(void)
 	os_process_args_t *args;
 	struct dstr caps_str = {0};
 	config_t *config = NULL;
-	bool success = false;
 
 	args = os_process_args_create(test_exe);
 
@@ -326,7 +325,7 @@ static bool nvenc_check(void)
 		goto fail;
 	}
 
-	success = config_get_bool(config, "general", "nvenc_supported");
+	bool success = config_get_bool(config, "general", "nvenc_supported");
 	if (!success) {
 		const char *error = config_get_string(config, "general", "reason");
 		blog(LOG_WARNING, "[NVENC] Test process failed: %s", error ? error : "unknown");
