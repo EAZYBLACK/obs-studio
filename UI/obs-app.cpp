@@ -506,6 +506,12 @@ void OBSApp::InitUserConfigDefaults()
 	config_set_default_bool(userConfig, "BasicWindow", "MultiviewDrawAreas", true);
 
 	config_set_default_bool(userConfig, "BasicWindow", "MediaControlsCountdownTimer", true);
+
+	#ifdef _WIN32
+	uint32_t winver = GetWindowsVersion();
+	config_set_default_bool(globalConfig, "General", "BrowserHWAccel",
+				winver > 0x601);
+    #endif
 }
 
 static bool do_mkdir(const char *path)
