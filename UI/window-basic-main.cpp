@@ -1859,6 +1859,7 @@ bool OBSBasic::InitBasicConfigDefaults()
 }
 
 extern bool EncoderAvailable(const char *encoder);
+extern bool update_nvenc_presets(ConfigFile &config);
 
 void OBSBasic::InitBasicConfigDefaults2()
 {
@@ -1876,8 +1877,13 @@ void OBSBasic::InitBasicConfigDefaults2()
 	else if (EncoderAvailable("libfdk_aac"))
 		aac_default = "libfdk_aac";
 
-	config_set_default_string(activeConfiguration, "AdvOut", "AudioEncoder", aac_default);
-	config_set_default_string(activeConfiguration, "AdvOut", "RecAudioEncoder", aac_default);
+	config_set_default_string(activeConfiguration, "AdvOut", "AudioEncoder",
+				  aac_default);
+	config_set_default_string(activeConfiguration, "AdvOut", "RecAudioEncoder",
+				  aac_default);
+
+	if (update_nvenc_presets(activeConfiguration))
+		config_save_safe(activeConfiguration, "tmp", nullptr);
 }
 
 bool OBSBasic::InitBasicConfig()
