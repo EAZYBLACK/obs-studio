@@ -2221,6 +2221,17 @@ void OBSBasic::OBSInit()
 	else if (!previewEnabled && IsPreviewProgramMode())
 		QMetaObject::invokeMethod(this, "EnablePreviewDisplay", Qt::QueuedConnection, Q_ARG(bool, true));
 
+#ifdef _WIN32
+	uint32_t winVer = GetWindowsVersion();
+	if (winVer > 0 && winVer < 0x602) {
+		bool disableAero =
+			config_get_bool(basicConfig, "Video", "DisableAero");
+		SetAeroEnabled(!disableAero);
+	}
+#endif
+
+	RefreshSceneCollections();
+	RefreshProfiles();
 	disableSaving--;
 
 	auto addDisplay = [this](OBSQTDisplay *window) {
@@ -2951,6 +2962,17 @@ OBSBasic::~OBSBasic()
 	config_set_bool(App()->GetUserConfig(), "BasicWindow", "DocksLocked", ui->lockDocks->isChecked());
 	config_set_bool(App()->GetUserConfig(), "BasicWindow", "SideDocks", ui->sideDocks->isChecked());
 	config_save_safe(App()->GetUserConfig(), "tmp", nullptr);
+
+#ifdef _WIN32
+	uint32_t winVer = GetWindowsVersion();
+	if (winVer > 0 && winVer < 0x602) {
+		bool disableAero =
+			config_get_bool(basicConfig, "Video", "DisableAero");
+		if (disableAero) {
+			SetAeroEnabled(true);
+		}
+	}
+#endif
 
 #ifdef BROWSER_AVAILABLE
 	DestroyPanelCookieManager();

@@ -228,6 +228,13 @@ static int FindClosestAvailableAudioBitrate(QComboBox *box, int bitrate)
 }
 #undef INVALID_BITRATE
 
+#ifdef _WIN32
+void OBSBasicSettings::ToggleDisableAero(bool checked)
+{
+	SetAeroEnabled(!checked);
+}
+#endif
+
 static void PopulateSimpleBitrates(QComboBox *box, bool opus)
 {
 	auto &bitrateMap = opus ? GetSimpleOpusEncoderBitrateMap() : GetSimpleAACEncoderBitrateMap();
@@ -610,6 +617,20 @@ OBSBasicSettings::OBSBasicSettings(QWidget *parent)
 	}
 
 #ifdef _WIN32
+	uint32_t winVer = GetWindowsVersion();
+	if (winVer > 0 && winVer < 0x602) {
+		// Older than Windows 8
+		toggleAero = new QCheckBox(
+			QTStr("Basic.Settings.Video.DisableAero"), this);
+		QFormLayout *videoLayout = reinterpret_cast<QFormLayout *>(
+			ui->videoPage->layout());
+		videoLayout->addRow(nullptr, toggleAero);
+
+		HookWidget(toggleAero, CHECK_CHANGED, VIDEO_CHANGED);
+		connect(toggleAero, &QAbstractButton::toggled, this,
+			&OBSBasicSettings::ToggleDisableAero);
+	}
+
 	if (!SetDisplayAffinitySupported()) {
 		delete ui->hideOBSFromCapture;
 		ui->hideOBSFromCapture = nullptr;
@@ -1675,6 +1696,16 @@ void OBSBasicSettings::LoadVideoSettings()
 	LoadResolutionLists();
 	LoadFPSData();
 	LoadDownscaleFilters();
+
+#ifdef _WIN32
+	if (toggleAero) {
+		bool disableAero =
+			config_get_bool(main->Config(), "Video", "DisableAero");
+		toggleAero->setChecked(disableAero);
+
+		aeroWasDisabled = disableAero;
+	}
+#endif
 
 	loading = false;
 }
@@ -3143,6 +3174,13 @@ void OBSBasicSettings::SaveVideoSettings()
 	SaveSpinBox(ui->fpsNumerator, "Video", "FPSNum");
 	SaveSpinBox(ui->fpsDenominator, "Video", "FPSDen");
 	SaveComboData(ui->downscaleFilter, "Video", "ScaleType");
+
+#ifdef _WIN32
+	if (toggleAero) {
+		SaveCheckBox(toggleAero, "Video", "DisableAero");
+		aeroWasDisabled = toggleAero->isChecked();
+	}
+#endif
 }
 
 void OBSBasicSettings::SaveAdvancedSettings()
@@ -3703,6 +3741,10 @@ bool OBSBasicSettings::QueryChanges()
 			App()->SetTheme(savedTheme->id);
 
 		LoadSettings(true);
+#ifdef _WIN32
+		if (toggleAero)
+			SetAeroEnabled(!aeroWasDisabled);
+#endif
 		restart = false;
 	}
 
@@ -3844,6 +3886,10 @@ void OBSBasicSettings::on_buttonBox_clicked(QAbstractButton *button)
 		if (val == QDialogButtonBox::RejectRole) {
 			if (savedTheme != App()->GetTheme())
 				App()->SetTheme(savedTheme->id);
+#ifdef _WIN32
+			if (toggleAero)
+				SetAeroEnabled(!aeroWasDisabled);
+#endif
 		}
 		ClearChanged();
 		close();

@@ -196,6 +196,12 @@ private:
 		EnableApplyButton(false);
 	}
 
+	#ifdef _WIN32
+	bool aeroWasDisabled = false;
+	QCheckBox *toggleAero = nullptr;
+	void ToggleDisableAero(bool checked);
+    #endif
+
 	template<typename Widget, typename WidgetParent, typename... SignalArgs, typename... SlotArgs>
 	void HookWidget(Widget *widget, void (WidgetParent::*signal)(SignalArgs...),
 			void (OBSBasicSettings::*slot)(SlotArgs...))
