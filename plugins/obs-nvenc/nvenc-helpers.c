@@ -357,7 +357,7 @@ fail:
 	dstr_free(&caps_str);
 	os_process_args_destroy(args);
 
-	return success;
+	return true;
 }
 
 static const char *nvenc_check_name = "nvenc_check";
