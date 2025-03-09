@@ -79,7 +79,7 @@ static bool apply_rc_opt(const struct obs_option *opt, NV_ENC_RC_PARAMS *nv_conf
 	APPLY_BIT_OPT(aqStrength, 4)
 
 #ifdef NVENC_12_2_OR_LATER
-	APPLY_INT_OPT(lookaheadLevel, NV_ENC_LOOKAHEAD_LEVEL, PRIu32)
+	APPLY_INT_OPT(lookaheadLevel, NV_ENC_LOOKAHEAD_LEVEL)
 #endif
 
 	/* Macros above will return true if succesfully evaluated.
@@ -146,7 +146,7 @@ static bool apply_hevc_opt(struct obs_option *opt, NV_ENC_CONFIG_HEVC *nv_conf)
 	APPLY_INT_OPT(idrPeriod, uint32_t, PRIu32)
 	APPLY_INT_OPT(useBFramesAsRef, NV_ENC_BFRAME_REF_MODE, PRIu32)
 #ifdef NVENC_12_2_OR_LATER
-	APPLY_INT_OPT(tfLevel, NV_ENC_TEMPORAL_FILTER_LEVEL, PRIu32)
+	APPLY_INT_OPT(tfLevel, NV_ENC_TEMPORAL_FILTER_LEVEL)
 #endif
 
 	APPLY_BIT_OPT(enableFillerDataInsertion, 1)
