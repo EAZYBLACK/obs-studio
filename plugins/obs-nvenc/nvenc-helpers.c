@@ -63,8 +63,8 @@ bool nv_failed2(obs_encoder_t *encoder, void *session, NVENCSTATUS err, const ch
 
 	switch (err) {
 	case NV_ENC_ERR_OUT_OF_MEMORY:
-	case NV_ENC_ERR_INCOMPATIBLE_CLIENT_KEY:
-		obs_encoder_set_last_error(encoder, obs_module_text("TooManySessions"));
+		obs_encoder_set_last_error(encoder,
+					   obs_module_text("TooManySessions"));
 		break;
 
 	case NV_ENC_ERR_NO_ENCODE_DEVICE:
