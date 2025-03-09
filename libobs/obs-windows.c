@@ -174,7 +174,38 @@ static void log_admin_status(void)
 		FreeSid(admin_group);
 	}
 
-	blog(LOG_INFO, "Running as administrator: %s", success ? "true" : "false");
+	blog(LOG_INFO, "Running as administrator: %s",
+	     success ? "true" : "false");
+}
+
+typedef HRESULT(WINAPI *dwm_is_composition_enabled_t)(BOOL *);
+
+static void log_aero(void)
+{
+	dwm_is_composition_enabled_t composition_enabled = NULL;
+
+	const char *aeroMessage =
+		win_ver >= 0x602
+			? " (Aero is always on for windows 8 and above)"
+			: "";
+
+	HMODULE dwm = LoadLibraryW(L"dwmapi");
+	BOOL bComposition = true;
+
+	if (!dwm) {
+		return;
+	}
+
+	composition_enabled = (dwm_is_composition_enabled_t)GetProcAddress(
+		dwm, "DwmIsCompositionEnabled");
+	if (!composition_enabled) {
+		FreeLibrary(dwm);
+		return;
+	}
+
+	composition_enabled(&bComposition);
+	blog(LOG_INFO, "Aero is %s%s", bComposition ? "Enabled" : "Disabled",
+	     aeroMessage);
 }
 
 #define WIN10_GAME_BAR_REG_KEY L"Software\\Microsoft\\Windows\\CurrentVersion\\GameDVR"
@@ -359,6 +390,7 @@ void log_system_info(void)
 	log_windows_version();
 	log_emulation_status();
 	log_admin_status();
+	log_aero();
 	log_gaming_features();
 	log_security_products();
 	log_conflicting_software();
