@@ -486,10 +486,7 @@ static bool init_encoder_h264(struct nvenc_data *enc, obs_data_t *settings)
 		config->profileGUID = NV_ENC_H264_PROFILE_HIGH_GUID;
 	}
 
-	if (!apply_user_args(enc)) {
-		obs_encoder_set_last_error(enc->encoder, obs_module_text("Opts.Invalid"));
-		return false;
-	}
+	apply_user_args(enc);
 
 	if (NV_FAILED(nv.nvEncInitializeEncoder(enc->session, &enc->params))) {
 		return false;
@@ -598,10 +595,7 @@ static bool init_encoder_hevc(struct nvenc_data *enc, obs_data_t *settings)
 	hevc_config->outputBitDepth = profile_is_10bpc ? NV_ENC_BIT_DEPTH_10 : NV_ENC_BIT_DEPTH_8;
 #endif
 
-	if (!apply_user_args(enc)) {
-		obs_encoder_set_last_error(enc->encoder, obs_module_text("Opts.Invalid"));
-		return false;
-	}
+	apply_user_args(enc);
 
 	if (NV_FAILED(nv.nvEncInitializeEncoder(enc->session, &enc->params))) {
 		return false;
@@ -685,10 +679,7 @@ static bool init_encoder_av1(struct nvenc_data *enc, obs_data_t *settings)
 	av1_config->numBwdRefs = 1;
 	av1_config->repeatSeqHdr = 1;
 
-	if (!apply_user_args(enc)) {
-		obs_encoder_set_last_error(enc->encoder, obs_module_text("Opts.Invalid"));
-		return false;
-	}
+	apply_user_args(enc);
 
 	if (NV_FAILED(nv.nvEncInitializeEncoder(enc->session, &enc->params))) {
 		return false;
